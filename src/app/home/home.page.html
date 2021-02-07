@@ -1,0 +1,32 @@
+<ion-content>
+  <div #content style="width: 100%; height: 100%;">
+    <div #grid>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-text class="score-label">
+              <h1>Score:</h1>
+            </ion-text>
+          </ion-col>
+          <ion-col>
+            <ion-text class="score">
+              <h1>{{score}}</h1></ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+    <div #map class="map">
+      <div class="info-panel">
+        <div class="info" *ngIf="infoVisible">
+          {{info}}
+        </div>
+        <div class="movements-info" *ngIf="movementsInfoVisible">
+          Tap the left side of the screen to turn left or the right side of the screen to turn right
+        </div>
+      </div>    
+      <div class="canvas-panel" [ngStyle]="{'height': canvasPanelHeight + 'px'}">      
+        <canvas class="game-canvas" #canvas [width]="mapWidth" [height]="mapHeight"></canvas>
+      </div>
+    </div>
+</div>
+</ion-content>
