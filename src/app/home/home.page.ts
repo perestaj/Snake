@@ -8,7 +8,7 @@ import {
   Renderer2,
   ViewChild,
 } from "@angular/core";
-import { ViewDidEnter } from "@ionic/angular";
+import { Platform, ViewDidEnter } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { Game, SegmentSize } from "../game/game";
 import { GameState } from "../game/game-state";
@@ -40,8 +40,9 @@ export class HomePage implements AfterViewInit, OnDestroy, ViewDidEnter {
   public infoVisible = true;
   public movementsInfoVisible = true;
   public info = "";
+  public controlInfo = "";
 
-  constructor(private ngZone: NgZone, private renderer: Renderer2) {}
+  constructor(private ngZone: NgZone, private renderer: Renderer2, private platform: Platform) {}
   
   public ngAfterViewInit(): void {
     this.renderer.listen(this.map.nativeElement, "touchstart", (ev: TouchEvent) => {
@@ -83,8 +84,12 @@ export class HomePage implements AfterViewInit, OnDestroy, ViewDidEnter {
 
     this.foodEatenSubscription = this.game.foodEaten.subscribe(_ => this.score += 10);
 
-    this.score = 0;
-    this.info = "Tap to start";
+    this.score = 0;    
+    const isMobile = this.platform.is('android') || this.platform.is('ios');
+    this.info = isMobile ? "Tap to start" : "Press space to start";
+    this.controlInfo = isMobile ? 
+      "Tap the left side of the screen to turn left or the right side of the screen to turn right" : 
+      "Use the arrow keys to change snake direction";
     this.infoVisible = true;
   }
 
@@ -107,19 +112,25 @@ export class HomePage implements AfterViewInit, OnDestroy, ViewDidEnter {
       case "Down": // IE/Edge specific value
       case "ArrowDown":
         this.game.changeDirection(Direction.Down);
-        break;
+        return;
       case "Up": // IE/Edge specific value
       case "ArrowUp":
         this.game.changeDirection(Direction.Up);
-        break;
+        return;
       case "Left": // IE/Edge specific value
       case "ArrowLeft":
         this.game.changeDirection(Direction.Left);
-        break;
+        return;
       case "Right": // IE/Edge specific value
       case "ArrowRight":
         this.game.changeDirection(Direction.Right);
-        break;
+        return;
+    }
+
+    if (ev.code === 'Space') {
+      if (this.gameState !== GameState.Started) {
+        this.game.start();
+      }
     }
   }
 }
